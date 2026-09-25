@@ -1,7 +1,7 @@
-const PacientesService =
-  require("../services/pacientesService");
+const ClinicasService =
+  require("../services/clinicasService");
 
-class PacientesController {
+class ClinicasController {
   static tratarErro(
     error,
     res,
@@ -11,14 +11,14 @@ class PacientesController {
 
     if (error.code === "23505") {
       return res.status(409).json({
-        erro: "CPF ou e-mail já cadastrado"
+        erro: "CNPJ já cadastrado"
       });
     }
 
     if (error.code === "23503") {
       return res.status(409).json({
         erro:
-          "O paciente possui registros vinculados e não pode ser excluído"
+          "A clínica possui profissionais ou especialidades vinculadas e não pode ser excluída"
       });
     }
 
@@ -34,99 +34,103 @@ class PacientesController {
 
   static async listar(req, res) {
     try {
-      const pacientes =
-        await PacientesService.listarTodos();
+      const clinicas =
+        await ClinicasService.listarTodas();
 
-      return res.status(200).json(pacientes);
+      return res
+        .status(200)
+        .json(clinicas);
     } catch (error) {
-      return PacientesController.tratarErro(
+      return ClinicasController.tratarErro(
         error,
         res,
-        "Erro interno ao listar pacientes"
+        "Erro interno ao listar clínicas"
       );
     }
   }
 
   static async buscarPorId(req, res) {
     try {
-      const paciente =
-        await PacientesService.buscarPorId(
+      const clinica =
+        await ClinicasService.buscarPorId(
           req.params.id
         );
 
-      return res.status(200).json(paciente);
+      return res
+        .status(200)
+        .json(clinica);
     } catch (error) {
-      return PacientesController.tratarErro(
+      return ClinicasController.tratarErro(
         error,
         res,
-        "Erro interno ao buscar paciente"
+        "Erro interno ao buscar clínica"
       );
     }
   }
 
   static async cadastrar(req, res) {
     try {
-      const paciente =
-        await PacientesService.cadastrar(
+      const clinica =
+        await ClinicasService.cadastrar(
           req.body
         );
 
       return res.status(201).json({
         mensagem:
-          "Paciente cadastrado com sucesso",
-        paciente
+          "Clínica cadastrada com sucesso",
+        clinica
       });
     } catch (error) {
-      return PacientesController.tratarErro(
+      return ClinicasController.tratarErro(
         error,
         res,
-        "Erro interno ao cadastrar paciente"
+        "Erro interno ao cadastrar clínica"
       );
     }
   }
 
   static async atualizar(req, res) {
     try {
-      const paciente =
-        await PacientesService.atualizar(
+      const clinica =
+        await ClinicasService.atualizar(
           req.params.id,
           req.body
         );
 
       return res.status(200).json({
         mensagem:
-          "Paciente atualizado com sucesso",
-        paciente
+          "Clínica atualizada com sucesso",
+        clinica
       });
     } catch (error) {
-      return PacientesController.tratarErro(
+      return ClinicasController.tratarErro(
         error,
         res,
-        "Erro interno ao atualizar paciente"
+        "Erro interno ao atualizar clínica"
       );
     }
   }
 
   static async excluir(req, res) {
     try {
-      const paciente =
-        await PacientesService.excluir(
+      const clinica =
+        await ClinicasService.excluir(
           req.params.id
         );
 
       return res.status(200).json({
         mensagem:
-          "Paciente excluído com sucesso",
-        paciente
+          "Clínica excluída com sucesso",
+        clinica
       });
     } catch (error) {
-      return PacientesController.tratarErro(
+      return ClinicasController.tratarErro(
         error,
         res,
-        "Erro interno ao excluir paciente"
+        "Erro interno ao excluir clínica"
       );
     }
   }
 }
 
-module.exports = PacientesController;
+module.exports = ClinicasController;

@@ -1,4 +1,5 @@
-const sql = require("../config/database");
+const sql =
+  require("../config/database");
 
 class Pacientes {
   static async listarTodos() {
@@ -39,7 +40,17 @@ class Pacientes {
 
   static async buscarCompletoPorId(id) {
     const resultado = await sql`
-      SELECT *
+      SELECT
+        id_paciente,
+        nome,
+        cpf,
+        data_nascimento,
+        telefone,
+        email,
+        senha_hash,
+        endereco,
+        ativo,
+        data_cadastro
       FROM pacientes
       WHERE id_paciente = ${id}
     `;
@@ -47,9 +58,15 @@ class Pacientes {
     return resultado[0];
   }
 
-  static async buscarPorCpfOuEmail(cpf, email) {
+  static async buscarPorCpfOuEmail(
+    cpf,
+    email
+  ) {
     const resultado = await sql`
-      SELECT id_paciente
+      SELECT
+        id_paciente,
+        cpf,
+        email
       FROM pacientes
       WHERE cpf = ${cpf}
          OR LOWER(email) = LOWER(${email})
@@ -59,9 +76,14 @@ class Pacientes {
     return resultado[0];
   }
 
-  static async buscarDuplicado(cpf, email, idPaciente) {
+  static async buscarDuplicado(
+    cpf,
+    email,
+    idPaciente
+  ) {
     const resultado = await sql`
-      SELECT id_paciente
+      SELECT
+        id_paciente
       FROM pacientes
       WHERE (
         cpf = ${cpf}
@@ -169,6 +191,28 @@ class Pacientes {
 
     return resultado[0];
   }
+
+  static async buscarParaLogin(
+    identificador
+  ) {
+    const resultado = await sql`
+      SELECT
+        id_paciente,
+        nome,
+        cpf,
+        email,
+        senha_hash,
+        ativo
+      FROM pacientes
+      WHERE LOWER(email) =
+            LOWER(${identificador})
+         OR cpf = ${identificador}
+      LIMIT 1
+    `;
+  
+    return resultado[0];
+  }
+
 }
 
 module.exports = Pacientes;
