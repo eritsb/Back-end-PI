@@ -6,6 +6,32 @@ const cors = require("cors");
 const pacientesRoutes =
   require("./routes/pacientesRoutes");
 
+const especialidadesRoutes =
+  require(
+    "./routes/especialidadesRoutes"
+  );
+
+const clinicasRoutes =
+  require("./routes/clinicasRoutes");
+
+const profissionaisRoutes =
+  require(
+    "./routes/profissionaisRoutes"
+  );
+
+const disponibilidadesRoutes =
+  require(
+    "./routes/disponibilidadesRoutes"
+  );
+
+const agendamentosRoutes =
+  require(
+    "./routes/agendamentosRoutes"
+  );
+
+const authRoutes =
+  require("./routes/authRoutes");
+
 const app = express();
 
 app.use(cors());
@@ -14,16 +40,54 @@ app.use(express.json());
 
 app.get("/", (req, res) => {
   return res.status(200).json({
-    mensagem: "API Consulta Fácil funcionando"
+    mensagem:
+      "API Consulta Fácil funcionando"
   });
 });
+
+app.use(
+  "/auth",
+  authRoutes
+);
 
 app.use(
   "/pacientes",
   pacientesRoutes
 );
 
-const PORT = process.env.PORT || 3000;
+app.use(
+  "/especialidades",
+  especialidadesRoutes
+);
+
+app.use(
+  "/clinicas",
+  clinicasRoutes
+);
+
+app.use(
+  "/profissionais",
+  profissionaisRoutes
+);
+
+app.use(
+  "/disponibilidades",
+  disponibilidadesRoutes
+);
+
+app.use(
+  "/agendamentos",
+  agendamentosRoutes
+);
+
+app.use((req, res) => {
+  return res.status(404).json({
+    erro: "Rota não encontrada"
+  });
+});
+
+const PORT =
+  process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(

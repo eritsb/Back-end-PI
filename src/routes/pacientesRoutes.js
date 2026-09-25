@@ -12,8 +12,7 @@ router.get(
 
 router.get(
   "/:id",
-  PacientesController.buscarPorId
-);
+  PacientesController.buscarPorId);
 
 router.post(
   "/",
