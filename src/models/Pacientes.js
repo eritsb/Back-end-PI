@@ -192,9 +192,8 @@ class Pacientes {
     return resultado[0];
   }
 
-  static async buscarParaLogin(
-    identificador
-  ) {
+  static async buscarPorEmailParaLogin(email) {
+  
     const resultado = await sql`
       SELECT
         id_paciente,
@@ -204,13 +203,15 @@ class Pacientes {
         senha_hash,
         ativo
       FROM pacientes
+  
       WHERE LOWER(email) =
-            LOWER(${identificador})
-         OR cpf = ${identificador}
+            LOWER(${email})
+  
       LIMIT 1
     `;
   
     return resultado[0];
+  
   }
 
 }

@@ -5,92 +5,122 @@ const Pacientes =
   require("../models/Pacientes");
 
 class AuthService {
+
   static criarErro(
     mensagem,
     statusCode
   ) {
-    const erro = new Error(mensagem);
 
-    erro.statusCode = statusCode;
+    const erro =
+      new Error(async (params) => {
+        mensagem
+      });
+
+    erro.statusCode =
+      statusCode;
 
     return erro;
+
   }
 
-  static verificarConfiguracao() {
-    if (!process.env.JWT_SECRET) {
-      throw this.criarErro(
-        "JWT_SECRET não configurada no servidor",
-        500
-      );
-    }
-  }
-
-  static normalizarIdentificador(
-    identificador
+  static validarEmail(
+    email
   ) {
-    const valor =
-      String(identificador).trim();
 
-    if (valor.includes("@")) {
-      return valor.toLowerCase();
+    const regex =
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (
+      !regex.test(email)
+    ) {
+
+      throw this.criarErro(
+        "E-mail inválido",
+        400
+      );
+
     }
 
-    return valor.replace(/\D/g, "");
   }
 
-  static gerarToken(paciente) {
-    this.verificarConfiguracao();
+  static gerarToken(
+    paciente
+  ) {
 
     return jwt.sign(
       {
-        id: paciente.id_paciente,
-        perfil: "PACIENTE"
+        id:
+          paciente.id_paciente,
+
+        perfil:
+          "PACIENTE"
       },
+
       process.env.JWT_SECRET,
+
       {
         expiresIn:
           process.env.JWT_EXPIRES_IN ||
           "8h"
       }
     );
+
   }
 
-  static async login(dados) {
+  static async login(
+    dados
+  ) {
+
     const {
-      identificador,
+      email,
       senha
     } = dados;
 
-    if (!identificador || !senha) {
+    if (
+      !email ||
+      !senha
+    ) {
+
       throw this.criarErro(
-        "E-mail ou CPF e senha são obrigatórios",
+        "E-mail e senha são obrigatórios",
         400
       );
+
     }
 
-    const identificadorNormalizado =
-      this.normalizarIdentificador(
-        identificador
-      );
+    const emailNormalizado =
+      String(email)
+        .trim()
+        .toLowerCase();
+
+    this.validarEmail(
+      emailNormalizado
+    );
 
     const paciente =
-      await Pacientes.buscarParaLogin(
-        identificadorNormalizado
-      );
-
+      await Pacientes
+        .buscarPorEmailParaLogin(
+          emailNormalizado
+        );
 
     if (!paciente) {
+
       throw this.criarErro(
-        "Credenciais inválidas",
+        "E-mail ou senha inválidos",
         401
       );
+
     }
 
-    if (!paciente.ativo) {
+    if (
+      !paciente.ativo
+    ) {
+
       throw this.criarErro(
-        "Conta de paciente inativa",
+        "Conta inativa",
         403
       );
+
     }
 
     const senhaCorreta =
@@ -100,50 +130,75 @@ class AuthService {
       );
 
     if (!senhaCorreta) {
+
       throw this.criarErro(
-        "Credenciais inválidas",
+        "E-mail ou senha inválidos",
         401
       );
+
     }
 
     const token =
-      this.gerarToken(paciente);
+      this.gerarToken(
+        paciente
+      );
 
     return {
+
       token,
 
       usuario: {
+
         id_paciente:
           paciente.id_paciente,
 
-        nome: paciente.nome,
-        cpf: paciente.cpf,
-        email: paciente.email,
-        perfil: "PACIENTE"
+        nome:
+          paciente.nome,
+
+        email:
+          paciente.email,
+
+        perfil:
+          "PACIENTE"
+
       }
+
     };
+
   }
 
   static async obterPerfil(
     idPaciente
   ) {
+
     const paciente =
-      await Pacientes.buscarPorId(
-        idPaciente
-      );
+      await Pacientes
+        .buscarPorId(
+          idPaciente
+        );
 
     if (!paciente) {
+
       throw this.criarErro(
         "Paciente não encontrado",
         404
       );
+
     }
 
     return {
+
       ...paciente,
-      perfil: "PACIENTE"
+
+      perfil:
+        "PACIENTE"
+
     };
+
   }
+
 }
 
-module.exports = AuthService;
+module.exports =
+  AuthService;
+``
